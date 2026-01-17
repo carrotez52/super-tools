@@ -2,44 +2,60 @@ const app = {
     init: () => {
         if (typeof Layout === 'undefined' || typeof toolList === 'undefined') return;
 
-        // 1. 테마 초기화
+        // 1. 테마 및 언어 설정 가져오기
         const savedTheme = localStorage.getItem('sft_theme');
         if (savedTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
 
-        // 2. 레이아웃 렌더링
-        app.renderLayout();
+        // 2. 언어 결정 (우선순위: URL > 저장된설정 > 브라우저 > 영어)
+        app.resolveLanguage();
 
-        // 3. 언어 설정 및 라우팅 (여기가 핵심!)
-        app.handleLanguageAndRouting();
+        // 3. 레이아웃 & 화면 그리기 (언어가 결정된 후에 그립니다!)
+        app.renderLayout();
+        app.router();
     },
 
-    handleLanguageAndRouting: () => {
+    resolveLanguage: () => {
         const urlParams = new URLSearchParams(window.location.search);
         const urlLang = urlParams.get('lang');
-        const toolParam = urlParams.get('tool');
         const savedLang = localStorage.getItem('sft_lang');
 
-        // [우선순위] 1. URL(?lang=ko) > 2. 저장된 설정 > 3. 브라우저 언어 > 4. 영어
+        let targetLang = 'en'; // 기본값
+
         if (urlLang && translations[urlLang]) {
-            app.setLang(urlLang);
+            targetLang = urlLang; // 1순위: URL
         } else if (savedLang && translations[savedLang]) {
-            // 저장된 언어 유지
+            targetLang = savedLang; // 2순위: 저장된 설정
         } else {
-            // 🔥 여기가 수정된 부분: 브라우저 언어 바로 감지 🔥
-            // ko-KR, ko, en-US 등을 감지해서 앞 2글자만 자름
-            const browserLang = navigator.language.substring(0, 2); 
-            
+            // 3순위: 브라우저 언어 감지
+            const browserLang = navigator.language.substring(0, 2);
             if (translations[browserLang]) {
-                console.log("Browser Language Detected:", browserLang);
-                app.setLang(browserLang);
-            } else {
-                app.setLang('en'); // 지원 안 하는 언어면 영어로
+                targetLang = browserLang;
+                console.log("Auto-detected Language:", targetLang);
             }
         }
 
-        // 툴 로드
+        // 결정된 언어로 설정 (저장 + UI 동기화)
+        app.setLang(targetLang, false); // false = 새로고침 안 함
+    },
+
+    setLang: (langCode, reload = true) => {
+        localStorage.setItem('sft_lang', langCode);
+        
+        // UI(선택박스) 강제 동기화 (이게 빠져서 EN으로 보였던 겁니다!)
+        const select = document.querySelector('.lang-selector');
+        if(select) select.value = langCode;
+
+        if (reload) {
+            location.reload();
+        }
+    },
+
+    router: () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const toolParam = urlParams.get('tool');
+
         if (toolParam && ToolEngine[toolParam]) {
             app.loadTool(toolParam);
         } else {
@@ -47,15 +63,14 @@ const app = {
         }
     },
 
-    setLang: (langCode) => {
-        localStorage.setItem('sft_lang', langCode);
-        const select = document.querySelector('.lang-selector');
-        if(select) select.value = langCode;
-    },
-
     renderLayout: () => {
         document.getElementById('app-header').innerHTML = Layout.renderHeader();
         document.getElementById('app-footer').innerHTML = Layout.renderFooter();
+        
+        // 헤더가 그려진 직후에 선택박스 값을 다시 한 번 맞춰줍니다.
+        const currentLang = localStorage.getItem('sft_lang') || 'en';
+        const select = document.querySelector('.lang-selector');
+        if(select) select.value = currentLang;
     },
 
     toggleTheme: () => {
@@ -64,6 +79,7 @@ const app = {
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('sft_theme', newTheme);
         document.getElementById('app-header').innerHTML = Layout.renderHeader();
+        app.renderLayout(); // 테마 변경 시 재렌더링
     },
 
     goHome: () => {
@@ -73,7 +89,8 @@ const app = {
         let html = Layout.renderAd('top');
         html += '<div class="tool-grid">';
         toolList.forEach(tool => {
-            const info = t[tool.id] || { title: tool.id, desc: "..." };
+            // 번역 데이터가 없으면 기본 ID를 보여주도록 안전장치 추가
+            const info = t[tool.id] || { title: tool.id, desc: "Description not found." };
             html += `
                 <div class="tool-card" onclick="app.loadTool('${tool.id}')">
                     <h3>${info.title}</h3>
@@ -129,15 +146,16 @@ const app = {
     },
 
     changeLang: (langCode) => {
-        app.setLang(langCode);
-        location.reload();
+        app.setLang(langCode, true); // true = 변경 후 새로고침
     },
 
     updateSEO: (title, desc, url) => { }
 };
 
-document.addEventListener('DOMContentLoaded', app.init);
+// 헬퍼 함수
 function getCurrentTranslation() {
     const lang = localStorage.getItem('sft_lang') || 'en';
     return translations[lang] || translations['en']; 
 }
+
+document.addEventListener('DOMContentLoaded', app.init);
