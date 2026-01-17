@@ -24,6 +24,9 @@
         "btn_capital": "Capitalize Word",
         "btn_sentence": "Sentence case",
         "btn_camel": "camelCase",
+        "url-encoder": { title: "URL Encoder/Decoder", desc: "Encode or Decode URLs for safe usage." },
+        "btn_encode": "Encode",
+        "btn_decode": "Decode",
     },
     "ko": {
         "site_title": "슈퍼무료툴",
@@ -50,6 +53,9 @@
         "btn_capital": "단어 앞글자만",
         "btn_sentence": "문장 첫글자만",
         "btn_camel": "카멜 표기법",
+        "url-encoder": { title: "URL 인코더/디코더", desc: "URL을 안전한 형식으로 변환하거나 원래대로 복구합니다." },
+        "btn_encode": "인코딩 (변환)",
+        "btn_decode": "디코딩 (복구)",
     }
     
 };
