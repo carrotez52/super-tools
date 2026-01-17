@@ -16,16 +16,16 @@ const ToolEngine = {
                 <div class="input-wrapper">
                     <div class="options-bar">
                         <label class="checkbox-label">
-                            <input type="checkbox" id="opt-no-space" onchange="ToolEngine['word-counter'].calculate()">
+                            <input type="checkbox" id="opt-no-space" name="option-nospace" onchange="ToolEngine['word-counter'].calculate()">
                             ${t.wc_opt_nospace}
                         </label>
                         <label class="checkbox-label">
-                            <input type="checkbox" id="opt-no-line" onchange="ToolEngine['word-counter'].calculate()">
+                            <input type="checkbox" id="opt-no-line" name="option-noline" onchange="ToolEngine['word-counter'].calculate()">
                             ${t.wc_opt_noline}
                         </label>
                     </div>
 
-                    <textarea id="main-input" placeholder="${t.wc_placeholder}"></textarea>
+                    <textarea id="main-input" name="content-input" placeholder="${t.wc_placeholder}"></textarea>
                     
                     <div class="action-bar">
                         <button class="btn-action btn-outline" onclick="ToolEngine['word-counter'].clear()">
@@ -95,7 +95,7 @@ const ToolEngine = {
                         <button class="btn-action btn-outline" onclick="ToolEngine['case-converter'].convert('camel')">${t.btn_camel}</button>
                     </div>
 
-                    <textarea id="main-input" placeholder="Hello World..." style="height: 200px;"></textarea>
+                    <textarea id="main-input" name="content-input" placeholder="Hello World..." style="height: 200px;"></textarea>
                     
                     <div class="action-bar">
                         <button class="btn-action btn-outline" onclick="ToolEngine['case-converter'].clear()">
@@ -156,7 +156,7 @@ const ToolEngine = {
                         <button class="btn-action btn-outline" onclick="ToolEngine['url-encoder'].convert('decode')">${t.btn_decode}</button>
                     </div>
 
-                    <textarea id="main-input" placeholder="https://example.com/search?q=한글" style="height: 200px;"></textarea>
+                    <textarea id="main-input" name="content-input" placeholder="https://example.com/search?q=한글" style="height: 200px;"></textarea>
                     
                     <div class="action-bar">
                         <button class="btn-action btn-outline" onclick="ToolEngine['url-encoder'].clear()">
