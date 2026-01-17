@@ -11,30 +11,35 @@ const app = {
         // 2. 레이아웃 렌더링
         app.renderLayout();
 
-        // 3. 언어 설정 및 라우팅 시작
+        // 3. 언어 설정 및 라우팅 (여기가 핵심!)
         app.handleLanguageAndRouting();
     },
 
-    handleLanguageAndRouting: async () => {
-        // URL 파라미터 확인 (?lang=ko 등)
+    handleLanguageAndRouting: () => {
         const urlParams = new URLSearchParams(window.location.search);
         const urlLang = urlParams.get('lang');
         const toolParam = urlParams.get('tool');
         const savedLang = localStorage.getItem('sft_lang');
 
-        // [로직] 1. URL 파라미터 > 2. 저장된 설정 > 3. IP 감지 > 4. 브라우저 언어
+        // [우선순위] 1. URL(?lang=ko) > 2. 저장된 설정 > 3. 브라우저 언어 > 4. 영어
         if (urlLang && translations[urlLang]) {
-            // URL에 지정된 경우 (최우선)
             app.setLang(urlLang);
         } else if (savedLang && translations[savedLang]) {
-            // 이전에 방문해서 저장된 설정이 있는 경우
-            // (이미 설정되어 있으므로 별도 액션 불필요)
+            // 저장된 언어 유지
         } else {
-            // 처음 방문자: IP로 국가 감지 시도
-            await app.detectGeoLocation();
+            // 🔥 여기가 수정된 부분: 브라우저 언어 바로 감지 🔥
+            // ko-KR, ko, en-US 등을 감지해서 앞 2글자만 자름
+            const browserLang = navigator.language.substring(0, 2); 
+            
+            if (translations[browserLang]) {
+                console.log("Browser Language Detected:", browserLang);
+                app.setLang(browserLang);
+            } else {
+                app.setLang('en'); // 지원 안 하는 언어면 영어로
+            }
         }
 
-        // 라우팅 (메인 vs 툴)
+        // 툴 로드
         if (toolParam && ToolEngine[toolParam]) {
             app.loadTool(toolParam);
         } else {
@@ -42,55 +47,8 @@ const app = {
         }
     },
 
-    // 🔥 핵심: IP 기반 국가 감지 함수 🔥
-    detectGeoLocation: async () => {
-        try {
-            // 1초 안에 응답 안오면 포기 (속도 저하 방지)
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 1000);
-
-            // 무료 GeoIP API 호출
-            const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-            clearTimeout(timeoutId);
-            
-            const data = await response.json();
-            const country = data.country_code; // KR, US, JP, CN ...
-
-            console.log("User Country Detected:", country);
-
-            // 국가 코드 -> 언어 코드 매핑
-            let targetLang = 'en'; // 기본값
-            
-            if (country === 'KR') targetLang = 'ko';
-            else if (country === 'JP') targetLang = 'ja'; // 일본어 추가 시
-            else if (country === 'CN') targetLang = 'zh'; // 중국어 추가 시
-            // ... 필요한 만큼 매핑 추가
-
-            // 감지된 언어가 우리가 지원하는 언어라면 적용
-            if (translations[targetLang]) {
-                app.setLang(targetLang);
-            } else {
-                // 지원 안하는 국가면 브라우저 언어 사용
-                app.detectBrowserLang();
-            }
-
-        } catch (error) {
-            console.warn("IP Detection failed (using browser lang):", error);
-            app.detectBrowserLang();
-        }
-    },
-
-    // 브라우저 언어 감지 (백업용)
-    detectBrowserLang: () => {
-        const browserLang = navigator.language.substring(0, 2);
-        if (translations[browserLang]) {
-            app.setLang(browserLang);
-        }
-    },
-
     setLang: (langCode) => {
         localStorage.setItem('sft_lang', langCode);
-        // 이미 렌더링된 헤더의 언어 선택박스 업데이트
         const select = document.querySelector('.lang-selector');
         if(select) select.value = langCode;
     },
@@ -172,10 +130,14 @@ const app = {
 
     changeLang: (langCode) => {
         app.setLang(langCode);
-        location.reload(); // 언어 변경 시 새로고침하여 전체 텍스트 적용
+        location.reload();
     },
 
-    updateSEO: (title, desc, url) => { /* SEO 유지 */ }
+    updateSEO: (title, desc, url) => { }
 };
 
 document.addEventListener('DOMContentLoaded', app.init);
+function getCurrentTranslation() {
+    const lang = localStorage.getItem('sft_lang') || 'en';
+    return translations[lang] || translations['en']; 
+}
