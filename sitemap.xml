@@ -1,8 +1,16 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">    <url>
-        <loc>https://mysupertools.com/</loc>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://carrotez52.github.io/super-tools/</loc>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://carrotez52.github.io/super-tools/?tool=word-counter&amp;lang=ko</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    </urlset>
     </url>    <url>
         <loc>https://mysupertools.com/?tool=word-counter&amp;lang=en</loc>
         <changefreq>weekly</changefreq>
@@ -44,3 +52,4 @@
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url></urlset>
+
