@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 
-Sitemap: https://mysupertools.com/sitemap.xml
+Sitemap: https://carrotez52.github.io/super-tools/sitemap.xml
