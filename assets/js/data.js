@@ -1,4 +1,3 @@
-﻿// assets/js/data.js
 const toolList = [
     {
         id: "word-counter",
@@ -9,5 +8,11 @@ const toolList = [
         id: "case-converter",
         category: "text",
         func: "convertCase"
+    },
+    // ▼▼▼ 이거 추가 ▼▼▼
+    {
+        id: "url-encoder",
+        category: "dev",
+        func: "urlEncode"
     }
 ];
