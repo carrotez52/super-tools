@@ -9,7 +9,6 @@ const toolList = [
         category: "text",
         func: "convertCase"
     },
-    // ▼▼▼ 이거 추가 ▼▼▼
     {
         id: "url-encoder",
         category: "dev",
