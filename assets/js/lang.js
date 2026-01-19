@@ -1,86 +1,80 @@
 const translations = {
-    "en": {
+"en": {
         "site_title": "SuperFreeTools",
         "theme_toggle": "Dark/Light",
+        "search_placeholder": "Search tools...",
         
-        // 검색 및 카테고리
-        "search_placeholder": "Search tools (e.g., word, url, json)...",
+        // ▼▼▼ 여기가 번역 데이터입니다 ▼▼▼
         "cat_all": "All",
         "cat_text": "Text Tools",
-        "cat_dev": "Developer",
-        "cat_image": "Image",
-        "cat_math": "Math",
-        
-        // 메뉴 (메가헤더용)
+        "cat_dev": "Developer Tools",
+        "cat_image": "Image Tools",
+        "cat_math": "Math Tools",
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         "menu_home": "Home",
         "menu_categories": "Categories",
-
-        // Word Counter
-        "word-counter": { title: "Word Counter", desc: "Count words, characters, and bytes with options." },
-        "wc_placeholder": "Type or paste your text here...",
+        
+        // 툴 번역들 (기존 유지)
+        "word-counter": { title: "Word Counter", desc: "Count words, characters, and bytes." },
+        "wc_placeholder": "Paste text here...",
         "wc_stat_words": "Words",
-        "wc_stat_chars": "Characters",
-        "wc_stat_nospace": "No Spaces",
+        "wc_stat_chars": "Chars",
         "wc_stat_bytes": "Bytes",
         "wc_stat_lines": "Lines",
-        "wc_opt_nospace": "Ignore Spaces",
-        "wc_opt_noline": "Ignore Newlines",
+        "wc_opt_nospace": "No Spaces",
+        "wc_opt_noline": "No Lines",
         "btn_copy": "Copy",
         "btn_clear": "Clear",
 
-        // Case Converter
-        "case-converter": { title: "Case Converter", desc: "Convert text to Uppercase, Lowercase, Capitalized, and more." },
-        "btn_upper": "UPPERCASE",
-        "btn_lower": "lowercase",
-        "btn_capital": "Capitalize Word",
-        "btn_sentence": "Sentence case",
+        "case-converter": { title: "Case Converter", desc: "Convert text case." },
+        "btn_upper": "UPPER",
+        "btn_lower": "lower",
+        "btn_capital": "Capital",
+        "btn_sentence": "Sentence",
         "btn_camel": "camelCase",
 
-        // URL Encoder
-        "url-encoder": { title: "URL Encoder/Decoder", desc: "Encode or Decode URLs for safe usage." },
+        "url-encoder": { title: "URL Encoder", desc: "Encode/Decode URLs." },
         "btn_encode": "Encode",
         "btn_decode": "Decode"
     },
-    "ko": {
+"ko": {
         "site_title": "슈퍼무료툴",
-        "theme_toggle": "테마 변경",
-        
-        // 검색 및 카테고리
-        "search_placeholder": "원하는 툴을 검색하세요 (예: 글자수, URL...)",
-        "cat_all": "전체",
-        "cat_text": "텍스트 툴",
-        "cat_dev": "개발자 툴",
-        "cat_image": "이미지 툴",
-        "cat_math": "계산 툴",
+        "theme_toggle": "테마",
+        "search_placeholder": "툴 검색 (예: 글자수, URL...)",
 
-        // 메뉴
+        // ▼▼▼ 여기가 한국어 번역입니다 ▼▼▼
+        "cat_all": "전체",
+        "cat_text": "📝 텍스트 툴",
+        "cat_dev": "💻 개발자 툴",
+        "cat_image": "🎨 이미지 툴",
+        "cat_math": "🧮 계산 툴",
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         "menu_home": "홈",
         "menu_categories": "카테고리",
 
-        // 글자수 세기
-        "word-counter": { title: "글자수 세기", desc: "단어, 글자수, 바이트 및 공백 제외 계산기입니다." },
-        "wc_placeholder": "내용을 입력하거나 붙여넣으세요...",
-        "wc_stat_words": "단어 수",
-        "wc_stat_chars": "전체 글자",
-        "wc_stat_nospace": "공백 제외",
+        // 툴 번역들
+        "word-counter": { title: "글자수 세기", desc: "단어, 글자수, 바이트 계산기." },
+        "wc_placeholder": "내용을 붙여넣으세요...",
+        "wc_stat_words": "단어",
+        "wc_stat_chars": "글자",
         "wc_stat_bytes": "바이트",
-        "wc_stat_lines": "줄 수",
-        "wc_opt_nospace": "공백 무시 계산",
-        "wc_opt_noline": "줄바꿈 무시 계산",
+        "wc_stat_lines": "줄",
+        "wc_opt_nospace": "공백제외",
+        "wc_opt_noline": "줄바꿈제외",
         "btn_copy": "복사",
         "btn_clear": "초기화",
 
-        // 대소문자 변환
-        "case-converter": { title: "대소문자 변환", desc: "영어 대문자, 소문자, 문장 첫 글자 변환기입니다." },
+        "case-converter": { title: "대소문자 변환", desc: "대문자, 소문자 변환기." },
         "btn_upper": "대문자로",
         "btn_lower": "소문자로",
-        "btn_capital": "단어 앞글자만",
-        "btn_sentence": "문장 첫글자만",
-        "btn_camel": "카멜 표기법",
+        "btn_capital": "앞글자만",
+        "btn_sentence": "문장첫글자",
+        "btn_camel": "카멜표기",
 
-        // URL 인코더
-        "url-encoder": { title: "URL 인코더/디코더", desc: "URL을 안전한 형식으로 변환하거나 원래대로 복구합니다." },
-        "btn_encode": "인코딩 (변환)",
-        "btn_decode": "디코딩 (복구)"
+        "url-encoder": { title: "URL 인코더", desc: "URL 변환/복구." },
+        "btn_encode": "변환",
+        "btn_decode": "복구"
     }
 };
