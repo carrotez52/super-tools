@@ -1,31 +1,64 @@
 const app = {
     init: () => {
         if (typeof Layout === 'undefined') return;
+        
+        // 1. 테마 복구
         const savedTheme = localStorage.getItem('sft_theme');
         if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
         
+        // 2. [중요] 언어 자동 감지 및 설정
         app.resolveLanguage();
+
+        // 3. 화면 렌더링
         app.renderLayout();
         app.router();
     },
 
     resolveLanguage: () => {
         const urlParams = new URLSearchParams(window.location.search);
-        let lang = urlParams.get('lang') || localStorage.getItem('sft_lang');
-        if (!lang || !translations[lang]) {
-            const browserLang = navigator.language.substring(0, 2);
-            lang = translations[browserLang] ? browserLang : 'en';
+        const urlLang = urlParams.get('lang');
+        const savedLang = localStorage.getItem('sft_lang');
+
+        let targetLang = 'en'; // 기본값
+
+        if (urlLang && translations[urlLang]) {
+            // 1순위: URL 파라미터 (?lang=ko)
+            targetLang = urlLang;
+        } else if (savedLang && translations[savedLang]) {
+            // 2순위: 이전에 저장된 설정
+            targetLang = savedLang;
+        } else {
+            // 3순위: 브라우저 언어 감지 (첫 방문 시)
+            const browserLang = navigator.language; // "ko-KR", "en-US" 등
+            if (browserLang.toLowerCase().includes('ko')) {
+                targetLang = 'ko';
+            } else {
+                targetLang = 'en';
+            }
         }
-        if (localStorage.getItem('sft_lang') !== lang) app.setLang(lang, false);
+
+        // 현재 설정과 다르면 저장 (새로고침 없이 상태만 업데이트)
+        if (localStorage.getItem('sft_lang') !== targetLang) {
+            localStorage.setItem('sft_lang', targetLang);
+        }
+        
+        // URL에 언어 파라미터가 없으면 추가해줌 (SEO에 좋음)
+        if (!urlLang) {
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('lang', targetLang);
+            history.replaceState(null, null, newUrl.toString());
+        }
     },
 
     setLang: (langCode, reload = true) => {
         localStorage.setItem('sft_lang', langCode);
         const url = new URL(window.location);
         url.searchParams.set('lang', langCode);
+        
         if (reload) window.location.href = url.toString();
         else history.replaceState(null, null, url.toString());
         
+        // UI 즉시 업데이트
         const select = document.querySelector('.lang-selector');
         if(select) select.value = langCode;
     },
@@ -37,7 +70,6 @@ const app = {
         document.getElementById('app-footer').innerHTML = Layout.renderFooter();
     },
 
-    // 헤더 메뉴 토글 (PC용 아코디언)
     toggleHeaderMenu: () => {
         const menu = document.getElementById('header-dropdown');
         const arrow = document.getElementById('header-arrow');
@@ -50,27 +82,26 @@ const app = {
         }
     },
 
-    // 모바일 메뉴 토글
-    toggleMobileMenu: () => {
-        document.getElementById('mobile-menu').classList.toggle('active');
-    },
+    toggleMobileMenu: () => { document.getElementById('mobile-menu').classList.toggle('active'); },
     toggleMobileSub: (id) => {
         const sub = document.getElementById(id);
         sub.style.display = sub.style.display === 'block' ? 'none' : 'block';
     },
 
-    // 특정 카테고리로 스크롤 이동
     scrollToCat: (cat) => {
-        app.goHome(); // 홈으로 먼저 이동
+        app.goHome();
         setTimeout(() => {
             const section = document.getElementById(`cat-section-${cat}`);
             if(section) {
-                // 이미 닫혀있다면 열어주기
                 if(!section.classList.contains('active')) section.classList.add('active');
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             // 메뉴 닫기
-            document.getElementById('header-dropdown').style.display = 'none';
+            const pcMenu = document.getElementById('header-dropdown');
+            if(pcMenu) pcMenu.style.display = 'none';
+            const arrow = document.getElementById('header-arrow');
+            if(arrow) arrow.style.transform = 'rotate(0deg)';
+            
             document.getElementById('mobile-menu').classList.remove('active');
         }, 100);
     },
@@ -82,15 +113,11 @@ const app = {
         else app.goHome();
     },
 
-    // 🔥 핵심 수정: 화면 초기화(버그 수정) & 칩 버튼 삭제
     goHome: () => {
         const container = document.getElementById('app-container');
         const t = app.getT();
         
-        // 1. 화면을 무조건 비웁니다 (새로고침 버그 해결!)
-        container.innerHTML = ''; 
-
-        // 2. 검색창과 리스트 컨테이너 생성 (칩 버튼 삭제됨)
+        container.innerHTML = ''; // 화면 초기화
         container.innerHTML = `
             ${Layout.renderAd('top')}
             <div id="search-section" class="search-container">
@@ -99,55 +126,39 @@ const app = {
             <div id="tool-list"></div>
             ${Layout.renderAd('bottom')}
         `;
-
         document.title = t.site_title;
         app.updateURL(null);
-        app.renderCategoryList(); // 카테고리 목록 그리기
+        app.renderCategoryList();
     },
 
     renderCategoryList: () => {
         const t = app.getT();
         const listContainer = document.getElementById('tool-list');
         const categories = ['text', 'dev', 'image', 'math'];
-        
         let html = '';
-        
         categories.forEach(cat => {
             const toolsInCat = toolList.filter(tool => tool.category === cat);
             if (toolsInCat.length === 0) return;
-
             const catKey = `cat_${cat}`; 
             const catName = t[catKey] || cat.toUpperCase();
-
             html += `
                 <div class="category-section" id="cat-section-${cat}">
                     <div class="category-header" onclick="app.toggleCategory('${cat}')">
-                        <span>${catName}</span>
-                        <span class="cat-arrow">▼</span>
+                        <span>${catName}</span><span class="cat-arrow">▼</span>
                     </div>
                     <div class="category-body">
                         <div class="tool-grid">
                             ${toolsInCat.map(tool => {
                                 const info = t[tool.id] || { title: tool.id, desc: "..." };
-                                return `
-                                    <div class="tool-card" onclick="app.loadTool('${tool.id}')">
-                                        <h3>${info.title}</h3>
-                                        <p>${info.desc}</p>
-                                    </div>
-                                `;
+                                return `<div class="tool-card" onclick="app.loadTool('${tool.id}')"><h3>${info.title}</h3><p>${info.desc}</p></div>`;
                             }).join('')}
                         </div>
                     </div>
                 </div>
             `;
         });
-
         listContainer.innerHTML = html;
-        
-        // 첫 번째 카테고리 자동 펼침
-        setTimeout(() => {
-           if(categories.length > 0) app.toggleCategory(categories[0]);
-        }, 100);
+        setTimeout(() => { if(categories.length > 0) app.toggleCategory(categories[0]); }, 100);
     },
 
     toggleCategory: (cat) => {
@@ -158,32 +169,19 @@ const app = {
     filterTools: () => {
         const searchInput = document.getElementById('tool-search');
         const keyword = searchInput ? searchInput.value.toLowerCase() : '';
-        
-        if (keyword === '') {
-            app.renderCategoryList();
-            return;
-        }
-
+        if (keyword === '') { app.renderCategoryList(); return; }
         const t = app.getT();
         const listContainer = document.getElementById('tool-list');
-        
         const filtered = toolList.filter(tool => {
             const info = t[tool.id] || { title: tool.id, desc: '' };
             return info.title.toLowerCase().includes(keyword) || info.desc.toLowerCase().includes(keyword);
         });
-
         let html = '<div class="tool-grid">';
-        if (filtered.length === 0) {
-            html += `<div style="text-align:center; padding:50px; width:100%; opacity:0.6;">No tools found 😢</div>`;
-        } else {
+        if (filtered.length === 0) { html += `<div style="text-align:center; padding:50px; opacity:0.6;">No tools found 😢</div>`; } 
+        else {
             filtered.forEach(tool => {
                 const info = t[tool.id] || { title: tool.id, desc: "..." };
-                html += `
-                    <div class="tool-card" onclick="app.loadTool('${tool.id}')">
-                        <h3>${info.title}</h3>
-                        <p>${info.desc}</p>
-                    </div>
-                `;
+                html += `<div class="tool-card" onclick="app.loadTool('${tool.id}')"><h3>${info.title}</h3><p>${info.desc}</p></div>`;
             });
         }
         html += '</div>';
@@ -208,8 +206,7 @@ const app = {
         const lang = localStorage.getItem('sft_lang') || 'en';
         const url = new URL(window.location);
         url.searchParams.set('lang', lang);
-        if(toolId) url.searchParams.set('tool', toolId);
-        else url.searchParams.delete('tool');
+        if(toolId) url.searchParams.set('tool', toolId); else url.searchParams.delete('tool');
         history.pushState(null, null, url.toString());
     },
     
