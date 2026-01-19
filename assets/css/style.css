@@ -111,3 +111,56 @@ footer { text-align: center; margin-top: 4rem; padding: 2rem 0; font-size: 0.9re
 @media (max-width: 600px) {
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+/* 검색창 & 카테고리 스타일 */
+.search-container {
+    margin: 20px 0 30px 0;
+    text-align: center;
+}
+
+#tool-search {
+    width: 100%;
+    max-width: 500px;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background: var(--surface);
+    color: var(--text);
+}
+
+#tool-search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+}
+
+.category-chips {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.chip:hover {
+    background: var(--bg);
+    transform: translateY(-2px);
+}
+
+.chip.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
