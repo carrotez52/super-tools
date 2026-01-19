@@ -12,73 +12,79 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pos
 .logo-text { font-size: 1.3rem; margin: 0; font-weight: 800; color: var(--primary); }
 
 .header-controls { display: flex; gap: 10px; align-items: center; }
-.btn-theme { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 5px 8px; font-size: 1.2rem; }
-.lang-selector { padding: 5px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.btn-theme, .mobile-menu-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; padding: 5px 8px; font-size: 1.2rem; color: var(--text); display: flex; align-items: center; justify-content: center; }
+.lang-selector { padding: 5px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: bold; }
 
-/* PC Nav */
+/* --- PC 네비게이션 (Desktop Nav) --- */
 .desktop-nav { display: flex; gap: 20px; align-items: center; height: 100%; }
-.desktop-nav a, .nav-item { color: var(--text); text-decoration: none; font-weight: 600; cursor: pointer; position: relative; }
-.desktop-nav a:hover, .nav-item:hover { color: var(--primary); }
-.dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); padding: 10px; min-width: 160px; }
-.nav-item:hover .dropdown-menu { display: block; animation: fadeInDown 0.2s ease; }
-.dropdown-menu a { display: block; padding: 10px; white-space: nowrap; font-weight: normal; }
-.dropdown-menu a:hover { background: var(--bg); color: var(--primary); border-radius: 6px; }
+.desktop-nav a { cursor: pointer; font-weight: 600; color: var(--text); text-decoration: none; transition: color 0.2s; }
+.desktop-nav a:hover { color: var(--primary); }
 
-@media (max-width: 768px) { .desktop-nav { display: none; } }
+/* 헤더 아코디언 (PC용) */
+.header-accordion { position: relative; cursor: pointer; font-weight: 600; user-select: none; }
+.header-accordion span { display: flex; align-items: center; gap: 5px; }
+#header-arrow { font-size: 0.7rem; transition: transform 0.3s; }
 
-/* --- 3. 메인: 검색창 & 아코디언 (Main UI) --- */
+/* PC 드롭다운 메뉴 (평소엔 숨김) */
+.dropdown-menu {
+    display: none; /* JS로 제어 */
+    position: absolute; top: 140%; left: 50%; transform: translateX(-50%);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1); padding: 5px; min-width: 160px;
+    animation: fadeInDown 0.2s ease; z-index: 200;
+}
+.dropdown-menu a { display: block; padding: 10px 15px; white-space: nowrap; font-weight: normal; font-size: 0.95rem; border-radius: 6px; }
+.dropdown-menu a:hover { background: var(--bg); color: var(--primary); }
+
+/* --- 모바일 메뉴 (Mobile Menu) - PC에선 무조건 숨김! --- */
+.mobile-menu-btn { display: none; } /* 기본 숨김 */
+.mobile-menu-area { display: none; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px 20px 20px; animation: slideDown 0.3s ease; }
+.mobile-menu-area.active { display: block; }
+.mobile-menu-area > a { display: block; padding: 15px 0; border-bottom: 1px solid var(--border); color: var(--text); text-decoration: none; font-weight: bold; }
+.mobile-cat-title { padding: 15px 0; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.mobile-sub-menu { display: none; padding: 10px 0 10px 15px; background: var(--bg); }
+.mobile-sub-menu a { display: block; padding: 8px 0; color: var(--text); opacity: 0.8; text-decoration: none; }
+
+/* --- 미디어 쿼리 (모바일 환경) --- */
+@media (max-width: 768px) {
+    .desktop-nav { display: none; } /* PC 메뉴 숨김 */
+    .mobile-menu-btn { display: flex; } /* 햄버거 버튼 보임 */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- 메인 UI (Search & Accordion) --- */
 .search-container { text-align: center; margin: 30px 0; }
 #tool-search { width: 100%; max-width: 500px; padding: 15px; border-radius: 30px; border: 2px solid var(--border); font-size: 1rem; background: var(--surface); color: var(--text); outline: none; transition: 0.3s; }
 #tool-search:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255,107,107,0.1); }
 
-/* 🔥 아코디언 스타일 (요청하신 부분) */
+/* 카테고리 아코디언 */
 .category-section { margin-bottom: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
-.category-header {
-    padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    font-size: 1.2rem; font-weight: bold; background: var(--surface); user-select: none;
-}
+.category-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; font-weight: bold; background: var(--surface); }
 .category-header:hover { background: var(--bg); color: var(--primary); }
-.cat-arrow { transition: transform 0.3s; font-size: 0.8rem; opacity: 0.6; }
-.category-section.active .cat-arrow { transform: rotate(180deg); } /* 펼쳐지면 화살표 회전 */
-
-.category-body {
-    max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; /* 촤라락 효과 */
-    background: var(--bg);
-}
-.category-section.active .category-body { max-height: 1000px; opacity: 1; padding: 20px; }
+.cat-arrow { transition: transform 0.3s; opacity: 0.6; }
+.category-section.active .cat-arrow { transform: rotate(180deg); }
+.category-body { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.4s ease; background: var(--bg); }
+.category-section.active .category-body { max-height: 2000px; opacity: 1; padding: 20px; }
 
 /* 툴 카드 */
 .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
 .tool-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
 .tool-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-.tool-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 1.1rem; }
+.tool-card h3 { margin: 0 0 10px 0; color: var(--primary); }
 .tool-card p { margin: 0; font-size: 0.9rem; opacity: 0.8; }
 
-/* --- 4. 툴 내부 버튼 & 레이아웃 (복구된 부분!) --- */
+/* 툴 내부 */
 .workspace { background: var(--surface); padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
 .input-wrapper { display: flex; flex-direction: column; gap: 15px; }
 textarea { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); resize: vertical; min-height: 150px; box-sizing: border-box; }
-
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-.stat-box { background: var(--bg); padding: 15px; border-radius: 8px; text-align: center; }
-.stat-number { display: block; font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-
-/* 버튼 스타일 (필수 복구) */
-.action-bar, .options-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-.options-bar { justify-content: flex-start; margin-bottom: 10px; }
-.btn-action { padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; border: none; font-size: 0.95rem; }
+.btn-action { padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; border: none; }
 .btn-primary { background: var(--primary); color: white; }
 .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-.btn-back { background: none; border: none; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 5px; margin-bottom: 20px; font-weight: bold; opacity: 0.6; }
-.btn-back:hover { opacity: 1; }
+.btn-back { background: none; border: none; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 5px; margin-bottom: 20px; font-weight: bold; }
 
-/* --- 5. AdSense & Footer (복구된 부분!) --- */
-.ad-container { text-align: center; margin: 30px 0; padding: 10px; border: 1px dashed var(--border); border-radius: 8px; background: var(--bg); }
-.ad-placeholder { color: #999; font-size: 0.85rem; padding: 20px; }
-
+/* 기타 */
+.ad-container { text-align: center; margin: 30px 0; padding: 20px; border: 1px dashed var(--border); border-radius: 8px; background: var(--bg); color: #999; }
 footer { text-align: center; margin-top: 4rem; padding: 2rem 0; font-size: 0.9rem; opacity: 0.6; border-top: 1px solid var(--border); }
-.footer-links a { color: var(--text); margin: 0 10px; text-decoration: none; }
 
-/* 애니메이션 정의 */
-@keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px) translateX(-50%); } to { opacity: 1; transform: translateY(0) translateX(-50%); } }
+@keyframes slideDown { from { height: 0; opacity: 0; } to { height: auto; opacity: 1; } }
