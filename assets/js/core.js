@@ -114,8 +114,14 @@ const app = {
         history.pushState(null, null, url.toString());
     },
 
-    changeLang: (langCode) => {
-        app.setLang(langCode, true);
+changeLang: (langCode) => {
+        // 1. 기억장치(localStorage)에 저장
+        localStorage.setItem('sft_lang', langCode);
+        
+        // 2. 주소창의 ?lang=... 부분도 강제로 바꿔서 이동(새로고침)
+        const url = new URL(window.location);
+        url.searchParams.set('lang', langCode);
+        window.location.href = url.toString(); 
     },
     
     toggleTheme: () => {
