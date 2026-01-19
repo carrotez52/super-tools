@@ -1,6 +1,4 @@
 const app = {
-    state: { currentCategory: 'all', searchText: '' },
-
     init: () => {
         if (typeof Layout === 'undefined') return;
         const savedTheme = localStorage.getItem('sft_theme');
@@ -39,16 +37,6 @@ const app = {
         document.getElementById('app-footer').innerHTML = Layout.renderFooter();
     },
 
-    toggleMobileMenu: () => {
-        const menu = document.getElementById('mobile-menu');
-        menu.classList.toggle('active');
-    },
-
-    toggleMobileSub: (id) => {
-        const sub = document.getElementById(id);
-        sub.style.display = sub.style.display === 'block' ? 'none' : 'block';
-    },
-
     router: () => {
         const urlParams = new URLSearchParams(window.location.search);
         const toolParam = urlParams.get('tool');
@@ -56,87 +44,118 @@ const app = {
         else app.goHome();
     },
 
+    // 🔥 핵심 수정: 아코디언 스타일 홈 화면
     goHome: () => {
         const container = document.getElementById('app-container');
         const t = app.getT();
         
-        // 검색창과 카테고리도 이제 번역된 텍스트(t.xxx)를 사용합니다!
+        // 검색창만 먼저 그리기
         if (!document.getElementById('search-section')) {
             container.innerHTML = `
                 ${Layout.renderAd('top')}
                 <div id="search-section" class="search-container">
                     <input type="text" id="tool-search" placeholder="${t.search_placeholder}" onkeyup="app.filterTools()">
-                    <div id="category-filters" class="category-chips">
-                        <button class="chip active" onclick="app.filterCategory('all')">${t.cat_all}</button>
-                        <button class="chip" onclick="app.filterCategory('text')">${t.cat_text}</button>
-                        <button class="chip" onclick="app.filterCategory('dev')">${t.cat_dev}</button>
-                        <button class="chip" onclick="app.filterCategory('image')">${t.cat_image}</button>
-                        <button class="chip" onclick="app.filterCategory('math')">${t.cat_math}</button>
-                    </div>
                 </div>
-                <div id="tool-list" class="tool-grid"></div>
+                <div id="tool-list"></div>
                 ${Layout.renderAd('bottom')}
             `;
         }
+
         document.title = t.site_title;
         app.updateURL(null);
-        app.filterTools();
+        app.renderCategoryList(); // 카테고리별로 그리기 실행
     },
 
-    filterCategory: (cat) => {
-        app.state.currentCategory = cat;
+    // 카테고리별 섹션 그리기 (아코디언)
+    renderCategoryList: () => {
         const t = app.getT();
-        
-        // 칩 스타일 업데이트
-        document.querySelectorAll('.chip').forEach(btn => {
-            // 번역된 텍스트와 비교하거나, data-cat 속성을 쓰면 더 좋지만 간단히 처리
-            let btnCat = 'all';
-            if(btn.innerText === t.cat_text) btnCat = 'text';
-            if(btn.innerText === t.cat_dev) btnCat = 'dev';
-            if(btn.innerText === t.cat_image) btnCat = 'image';
-            if(btn.innerText === t.cat_math) btnCat = 'math';
-            
-            btn.classList.toggle('active', btnCat === cat);
-        });
-        
-        // 모바일 메뉴 닫기
-        document.getElementById('mobile-menu').classList.remove('active');
-        app.filterTools();
-    },
-
-    filterTools: () => {
-        const t = app.getT();
-        const searchInput = document.getElementById('tool-search');
-        const keyword = searchInput ? searchInput.value.toLowerCase() : '';
         const listContainer = document.getElementById('tool-list');
+        const categories = ['text', 'dev', 'image', 'math']; // 표시할 순서
         
         let html = '';
-        const filtered = toolList.filter(tool => {
-            const info = t[tool.id] || { title: tool.id, desc: '' };
-            const matchCat = app.state.currentCategory === 'all' || tool.category === app.state.currentCategory;
-            const matchKey = info.title.toLowerCase().includes(keyword) || info.desc.toLowerCase().includes(keyword);
-            return matchCat && matchKey;
+        
+        categories.forEach(cat => {
+            // 해당 카테고리에 툴이 있는지 확인
+            const toolsInCat = toolList.filter(tool => tool.category === cat);
+            if (toolsInCat.length === 0) return;
+
+            // 카테고리 이름 (번역)
+            const catName = t[`cat_${cat}`] || cat.toUpperCase();
+
+            html += `
+                <div class="category-section" id="cat-section-${cat}">
+                    <div class="category-header" onclick="app.toggleCategory('${cat}')">
+                        <span>${catName}</span>
+                        <span class="cat-arrow">▼</span>
+                    </div>
+                    <div class="category-body">
+                        <div class="tool-grid">
+                            ${toolsInCat.map(tool => {
+                                const info = t[tool.id] || { title: tool.id, desc: "..." };
+                                return `
+                                    <div class="tool-card" onclick="app.loadTool('${tool.id}')">
+                                        <h3>${info.title}</h3>
+                                        <p>${info.desc}</p>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
         });
 
+        listContainer.innerHTML = html;
+        
+        // 첫 번째 카테고리는 기본으로 펼쳐주기 (센스!)
+        setTimeout(() => {
+           if(categories.length > 0) app.toggleCategory(categories[0]);
+        }, 100);
+    },
+
+    // 클릭했을 때 펼치고 접는 함수 (촤라락 효과)
+    toggleCategory: (cat) => {
+        const section = document.getElementById(`cat-section-${cat}`);
+        if(section) section.classList.toggle('active');
+    },
+
+    // 검색하면 아코디언 무시하고 결과만 보여주기
+    filterTools: () => {
+        const searchInput = document.getElementById('tool-search');
+        const keyword = searchInput ? searchInput.value.toLowerCase() : '';
+        
+        if (keyword === '') {
+            app.renderCategoryList(); // 검색어 없으면 다시 아코디언 보여줌
+            return;
+        }
+
+        const t = app.getT();
+        const listContainer = document.getElementById('tool-list');
+        
+        const filtered = toolList.filter(tool => {
+            const info = t[tool.id] || { title: tool.id, desc: '' };
+            return info.title.toLowerCase().includes(keyword) || info.desc.toLowerCase().includes(keyword);
+        });
+
+        let html = '<div class="tool-grid">';
         if (filtered.length === 0) {
-            html = `<div style="text-align:center; padding:50px; width:100%; opacity:0.6;">No tools found 😢</div>`;
+            html += `<div style="text-align:center; padding:50px; width:100%; opacity:0.6;">No tools found 😢</div>`;
         } else {
-            // 애니메이션 딜레이를 주기 위해 index 사용
-            filtered.forEach((tool, index) => {
+            filtered.forEach(tool => {
                 const info = t[tool.id] || { title: tool.id, desc: "..." };
-                // style="animation-delay: 0.1s" 추가
                 html += `
-                    <div class="tool-card animate-card" style="animation-delay: ${index * 0.05}s" onclick="app.loadTool('${tool.id}')">
+                    <div class="tool-card" onclick="app.loadTool('${tool.id}')">
                         <h3>${info.title}</h3>
                         <p>${info.desc}</p>
                     </div>
                 `;
             });
         }
-        if(listContainer) listContainer.innerHTML = html;
+        html += '</div>';
+        listContainer.innerHTML = html;
     },
 
-    loadTool: (toolId) => { /* 기존 유지 */
+    loadTool: (toolId) => {
         const container = document.getElementById('app-container');
         const t = app.getT();
         if (ToolEngine[toolId]) {
@@ -150,7 +169,7 @@ const app = {
         }
     },
 
-    updateURL: (toolId) => { /* 기존 유지 */
+    updateURL: (toolId) => {
         const lang = localStorage.getItem('sft_lang') || 'en';
         const url = new URL(window.location);
         url.searchParams.set('lang', lang);
@@ -159,7 +178,7 @@ const app = {
         history.pushState(null, null, url.toString());
     },
     
-    toggleTheme: () => { /* 기존 유지 */
+    toggleTheme: () => {
         const current = document.documentElement.getAttribute('data-theme');
         const newTheme = current === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
