@@ -44,12 +44,10 @@ const app = {
         else app.goHome();
     },
 
-    // 🔥 핵심 수정: 아코디언 스타일 홈 화면
     goHome: () => {
         const container = document.getElementById('app-container');
         const t = app.getT();
         
-        // 검색창만 먼저 그리기
         if (!document.getElementById('search-section')) {
             container.innerHTML = `
                 ${Layout.renderAd('top')}
@@ -63,24 +61,24 @@ const app = {
 
         document.title = t.site_title;
         app.updateURL(null);
-        app.renderCategoryList(); // 카테고리별로 그리기 실행
+        app.renderCategoryList(); 
     },
 
-    // 카테고리별 섹션 그리기 (아코디언)
     renderCategoryList: () => {
-        const t = app.getT();
+        const t = app.getT(); // 현재 언어 팩 가져오기
         const listContainer = document.getElementById('tool-list');
-        const categories = ['text', 'dev', 'image', 'math']; // 표시할 순서
+        const categories = ['text', 'dev', 'image', 'math'];
         
         let html = '';
         
         categories.forEach(cat => {
-            // 해당 카테고리에 툴이 있는지 확인
             const toolsInCat = toolList.filter(tool => tool.category === cat);
             if (toolsInCat.length === 0) return;
 
-            // 카테고리 이름 (번역)
-            const catName = t[`cat_${cat}`] || cat.toUpperCase();
+            // 🔥 [수정됨] 번역 데이터 가져오기 (cat_text, cat_dev ...)
+            // 만약 번역이 없으면 영어(대문자)로 표시
+            const catKey = `cat_${cat}`; 
+            const catName = t[catKey] || cat.toUpperCase();
 
             html += `
                 <div class="category-section" id="cat-section-${cat}">
@@ -107,25 +105,22 @@ const app = {
 
         listContainer.innerHTML = html;
         
-        // 첫 번째 카테고리는 기본으로 펼쳐주기 (센스!)
         setTimeout(() => {
            if(categories.length > 0) app.toggleCategory(categories[0]);
         }, 100);
     },
 
-    // 클릭했을 때 펼치고 접는 함수 (촤라락 효과)
     toggleCategory: (cat) => {
         const section = document.getElementById(`cat-section-${cat}`);
         if(section) section.classList.toggle('active');
     },
 
-    // 검색하면 아코디언 무시하고 결과만 보여주기
     filterTools: () => {
         const searchInput = document.getElementById('tool-search');
         const keyword = searchInput ? searchInput.value.toLowerCase() : '';
         
         if (keyword === '') {
-            app.renderCategoryList(); // 검색어 없으면 다시 아코디언 보여줌
+            app.renderCategoryList();
             return;
         }
 
