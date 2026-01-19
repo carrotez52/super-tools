@@ -20,6 +20,22 @@
     
     <main id="app-container" class="container">
         <div class="loader">Loading Tools...</div>
+        <main id="app-container" class="container">
+    <div id="search-section" class="search-container">
+        <input type="text" id="tool-search" placeholder="Search tools (e.g., word, url, json)..." onkeyup="app.filterTools()">
+        <div id="category-filters" class="category-chips">
+            <button class="chip active" onclick="app.filterCategory('all')">All</button>
+            <button class="chip" onclick="app.filterCategory('text')">Text</button>
+            <button class="chip" onclick="app.filterCategory('dev')">Dev</button>
+            <button class="chip" onclick="app.filterCategory('image')">Image</button>
+            <button class="chip" onclick="app.filterCategory('math')">Math</button>
+        </div>
+    </div>
+
+    <div id="tool-list" class="tool-grid">
+        <div class="loader">Loading Tools...</div>
+    </div>
+</main>
     </main>
     
     <footer id="app-footer"></footer>
