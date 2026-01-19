@@ -37,6 +37,44 @@ const app = {
         document.getElementById('app-footer').innerHTML = Layout.renderFooter();
     },
 
+    // 헤더 메뉴 토글 (PC용 아코디언)
+    toggleHeaderMenu: () => {
+        const menu = document.getElementById('header-dropdown');
+        const arrow = document.getElementById('header-arrow');
+        if (menu.style.display === 'block') {
+            menu.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            menu.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    },
+
+    // 모바일 메뉴 토글
+    toggleMobileMenu: () => {
+        document.getElementById('mobile-menu').classList.toggle('active');
+    },
+    toggleMobileSub: (id) => {
+        const sub = document.getElementById(id);
+        sub.style.display = sub.style.display === 'block' ? 'none' : 'block';
+    },
+
+    // 특정 카테고리로 스크롤 이동
+    scrollToCat: (cat) => {
+        app.goHome(); // 홈으로 먼저 이동
+        setTimeout(() => {
+            const section = document.getElementById(`cat-section-${cat}`);
+            if(section) {
+                // 이미 닫혀있다면 열어주기
+                if(!section.classList.contains('active')) section.classList.add('active');
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            // 메뉴 닫기
+            document.getElementById('header-dropdown').style.display = 'none';
+            document.getElementById('mobile-menu').classList.remove('active');
+        }, 100);
+    },
+
     router: () => {
         const urlParams = new URLSearchParams(window.location.search);
         const toolParam = urlParams.get('tool');
@@ -44,28 +82,31 @@ const app = {
         else app.goHome();
     },
 
+    // 🔥 핵심 수정: 화면 초기화(버그 수정) & 칩 버튼 삭제
     goHome: () => {
         const container = document.getElementById('app-container');
         const t = app.getT();
         
-        if (!document.getElementById('search-section')) {
-            container.innerHTML = `
-                ${Layout.renderAd('top')}
-                <div id="search-section" class="search-container">
-                    <input type="text" id="tool-search" placeholder="${t.search_placeholder}" onkeyup="app.filterTools()">
-                </div>
-                <div id="tool-list"></div>
-                ${Layout.renderAd('bottom')}
-            `;
-        }
+        // 1. 화면을 무조건 비웁니다 (새로고침 버그 해결!)
+        container.innerHTML = ''; 
+
+        // 2. 검색창과 리스트 컨테이너 생성 (칩 버튼 삭제됨)
+        container.innerHTML = `
+            ${Layout.renderAd('top')}
+            <div id="search-section" class="search-container">
+                <input type="text" id="tool-search" placeholder="${t.search_placeholder}" onkeyup="app.filterTools()">
+            </div>
+            <div id="tool-list"></div>
+            ${Layout.renderAd('bottom')}
+        `;
 
         document.title = t.site_title;
         app.updateURL(null);
-        app.renderCategoryList(); 
+        app.renderCategoryList(); // 카테고리 목록 그리기
     },
 
     renderCategoryList: () => {
-        const t = app.getT(); // 현재 언어 팩 가져오기
+        const t = app.getT();
         const listContainer = document.getElementById('tool-list');
         const categories = ['text', 'dev', 'image', 'math'];
         
@@ -75,8 +116,6 @@ const app = {
             const toolsInCat = toolList.filter(tool => tool.category === cat);
             if (toolsInCat.length === 0) return;
 
-            // 🔥 [수정됨] 번역 데이터 가져오기 (cat_text, cat_dev ...)
-            // 만약 번역이 없으면 영어(대문자)로 표시
             const catKey = `cat_${cat}`; 
             const catName = t[catKey] || cat.toUpperCase();
 
@@ -105,6 +144,7 @@ const app = {
 
         listContainer.innerHTML = html;
         
+        // 첫 번째 카테고리 자동 펼침
         setTimeout(() => {
            if(categories.length > 0) app.toggleCategory(categories[0]);
         }, 100);
