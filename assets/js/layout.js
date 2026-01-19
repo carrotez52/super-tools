@@ -13,12 +13,15 @@ const Layout = {
                 </div>
                 
                 <nav class="desktop-nav">
-                    <a href="#" onclick="app.goHome()">${t.menu_home}</a>
-                    <div class="nav-item">
-                        <span>${t.menu_categories} ▾</span>
-                        <div class="dropdown-menu">
-                            <a onclick="app.goHome()">${t.cat_text}</a>
-                            <a onclick="app.goHome()">${t.cat_dev}</a>
+                    <a onclick="app.goHome()">${t.menu_home}</a>
+                    
+                    <div class="nav-item header-accordion" onclick="app.toggleHeaderMenu()">
+                        <span>${t.menu_categories} <span id="header-arrow">▼</span></span>
+                        <div id="header-dropdown" class="dropdown-menu">
+                            <a onclick="app.scrollToCat('text')">${t.cat_text}</a>
+                            <a onclick="app.scrollToCat('dev')">${t.cat_dev}</a>
+                            <a onclick="app.scrollToCat('image')">${t.cat_image}</a>
+                            <a onclick="app.scrollToCat('math')">${t.cat_math}</a>
                         </div>
                     </div>
                 </nav>
@@ -31,13 +34,26 @@ const Layout = {
                         <option value="en" ${isEn}>EN</option>
                         <option value="ko" ${isKo}>KO</option>
                     </select>
+                    <button class="mobile-menu-btn" onclick="app.toggleMobileMenu()">☰</button>
+                </div>
+            </div>
+
+            <div id="mobile-menu" class="mobile-menu-area">
+                <a onclick="app.goHome()">${t.menu_home}</a>
+                <div class="mobile-cat-title" onclick="app.toggleMobileSub('mob-sub-1')">
+                    ${t.menu_categories} <span class="arrow">▼</span>
+                </div>
+                <div id="mob-sub-1" class="mobile-sub-menu">
+                    <a onclick="app.scrollToCat('text')">- ${t.cat_text}</a>
+                    <a onclick="app.scrollToCat('dev')">- ${t.cat_dev}</a>
+                    <a onclick="app.scrollToCat('image')">- ${t.cat_image}</a>
+                    <a onclick="app.scrollToCat('math')">- ${t.cat_math}</a>
                 </div>
             </div>
         `;
     },
 
     renderFooter: () => {
-        // Privacy Policy 삭제 완료
         return `
             <div class="footer-content container">
                 <p>&copy; 2026 SuperFreeTools. All rights reserved.</p>
