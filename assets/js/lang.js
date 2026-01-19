@@ -3,6 +3,18 @@ const translations = {
         "site_title": "SuperFreeTools",
         "theme_toggle": "Dark/Light",
         
+        // 검색 및 카테고리
+        "search_placeholder": "Search tools (e.g., word, url, json)...",
+        "cat_all": "All",
+        "cat_text": "Text Tools",
+        "cat_dev": "Developer",
+        "cat_image": "Image",
+        "cat_math": "Math",
+        
+        // 메뉴 (메가헤더용)
+        "menu_home": "Home",
+        "menu_categories": "Categories",
+
         // Word Counter
         "word-counter": { title: "Word Counter", desc: "Count words, characters, and bytes with options." },
         "wc_placeholder": "Type or paste your text here...",
@@ -33,6 +45,18 @@ const translations = {
         "site_title": "슈퍼무료툴",
         "theme_toggle": "테마 변경",
         
+        // 검색 및 카테고리
+        "search_placeholder": "원하는 툴을 검색하세요 (예: 글자수, URL...)",
+        "cat_all": "전체",
+        "cat_text": "텍스트 툴",
+        "cat_dev": "개발자 툴",
+        "cat_image": "이미지 툴",
+        "cat_math": "계산 툴",
+
+        // 메뉴
+        "menu_home": "홈",
+        "menu_categories": "카테고리",
+
         // 글자수 세기
         "word-counter": { title: "글자수 세기", desc: "단어, 글자수, 바이트 및 공백 제외 계산기입니다." },
         "wc_placeholder": "내용을 입력하거나 붙여넣으세요...",
