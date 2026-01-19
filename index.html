@@ -13,27 +13,20 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
     
     <link rel="stylesheet" href="assets/css/style.css">
-    
-    </head>
+</head>
 <body>
     <header id="app-header"></header>
     
     <main id="app-container" class="container">
         <div id="search-section" class="search-container">
-            <input type="text" id="tool-search" placeholder="Search tools (e.g., word, url, json)..." onkeyup="app.filterTools()">
-            <div id="category-filters" class="category-chips">
-                <button class="chip active" onclick="app.filterCategory('all')">All</button>
-                <button class="chip" onclick="app.filterCategory('text')">Text</button>
-                <button class="chip" onclick="app.filterCategory('dev')">Dev</button>
-                <button class="chip" onclick="app.filterCategory('image')">Image</button>
-                <button class="chip" onclick="app.filterCategory('math')">Math</button>
-            </div>
+            <input type="text" id="tool-search" placeholder="Search tools..." onkeyup="app.filterTools()">
         </div>
 
         <div id="tool-list" class="tool-grid">
             <div class="loader">Loading Tools...</div>
         </div>
     </main>
+    
     <footer id="app-footer"></footer>
 
     <script src="assets/js/data.js"></script>
